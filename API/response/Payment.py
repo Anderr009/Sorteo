@@ -37,4 +37,4 @@ def payment(request):
         }
     )
     response = client.execute(order)
-    return Response({"id":response.status_code})
+    return Response({"id":response.result.id})

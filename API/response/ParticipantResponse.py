@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
+from django.core.exceptions import ObjectDoesNotExist
 from API.serializers.SerializerPart import Participante_Serializer
 from API.models import Participante
 from random import randint
@@ -18,7 +19,16 @@ def Participant_Register(request):
             valid = json.loads(resp.text)
             if not valid['valid']: 
                 return Response({'mensaje':'cedula no valida'},status= status.HTTP_400_BAD_REQUEST)
+            
+            while True:
+                cod = GetCode()
+                try:
+                    #Buscando un codigo unico 
+                    tempPrt = Participante.objects.get(codigo=cod)
+                except ObjectDoesNotExist:
+                    break;
             prt = Participante(**dataDict)
+            prt.codigo = tempPrt
             prt.save()
             return Response({"mensaje":"creado"},status=status.HTTP_201_CREATED)
         except KeyError:

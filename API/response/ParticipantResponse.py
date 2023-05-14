@@ -8,8 +8,13 @@ from random import randint
 import requests
 import json
 
-@api_view(['POST'])
+@api_view(['POST','GET'])
 def Participant_Register(request):
+    if request.method == 'GET':
+        part = Participante.objects.all()
+        serializer = Participante_Serializer(part,many=True)
+        return Response(serializer.data,status= status.HTTP_200_OK)
+    #en caso de ser POST
     if request.method == 'POST':
         data = request.body
         dataDict = json.loads(data)
@@ -28,7 +33,7 @@ def Participant_Register(request):
                 except ObjectDoesNotExist:
                     break;
             prt = Participante(**dataDict)
-            prt.codigo = tempPrt
+            prt.codigo = cod
             prt.save()
             return Response({"mensaje":"creado"},status=status.HTTP_201_CREATED)
         except KeyError:
